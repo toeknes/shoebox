@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Bouncing Ball (HTML 5)</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: black;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: white;
+        position: relative;
+    }
+
+
+    section {
+        text-align: center;
+        position: relative;
+    }
+
+
+    h2 {
+        margin-top: 0;
+    }
+
+
+    canvas {
+        background-color: rgba(255, 255, 255, 0.02);
+        border: 1px solid;
+    }
+
+
+    #counter {
+        position: absolute;
+        top: 10px;
+        right: calc(100% + 10px);
+        transform: translate(100%, 0);
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        color: white;
+    }
+</style>
+</head>
+<body>
+<section>
+    <h2>Bouncing Ball (on HTML 5 Canvas)</h2>
+    <canvas id="box" width="520" height="410">Canvas not supported</canvas>
+    <div id="counter">Hits: 0</div>
+   <audio id="collisionSound">
+    <source src="wompwomp.mp3"audio/mpeg">
+</audio>
+
+
+
+
+</section>
+
+
+<script>
+var hitCount = 0;
+var MIN_X = 0;
+var MIN_Y = 0;
+var WIDTH = 520;
+var HEIGHT = 410;
+var MAX_X = MIN_X + WIDTH - 1;
+var MAX_Y = MIN_Y + HEIGHT - 1;
+var ballRadius = 30;
+var ballCenterX = (WIDTH - 2 * ballRadius) * Math.random() + ballRadius;
+var ballCenterY = (HEIGHT - 2 * ballRadius) * Math.random() + ballRadius;
+var ballSpeedX = 5;
+var ballSpeedY = 3;
+var ballColor = getRandomColor();
+var context;
+var collisionSound = document.getElementById('collisionSound');
+
+
+function init() {
+    var canvas = document.getElementById('box');
+    context = canvas.getContext('2d');
+    setInterval(draw, 15);
+}
+
+
+function draw() {
+    context.fillStyle = 'rgba(255, 255, 255, 0.05)';
+    context.fillRect(0, 0, WIDTH, HEIGHT);
+
+
+    drawBall(ballCenterX, ballCenterY, ballRadius, ballColor);
+
+
+    ballCenterX += ballSpeedX;
+    ballCenterY += ballSpeedY;
+
+
+    if (ballCenterX - ballRadius < MIN_X || ballCenterX + ballRadius > MAX_X ||
+        ballCenterY - ballRadius < MIN_Y || ballCenterY + ballRadius > MAX_Y) {
+        collisionSound.currentTime = 0;
+        collisionSound.play();
+    }
+
+
+    if (ballCenterX - ballRadius < MIN_X || ballCenterX + ballRadius > MAX_X ||
+        ballCenterY - ballRadius < MIN_Y || ballCenterY + ballRadius > MAX_Y) {
+        ballColor = getRandomColor();
+    }
+
+
+    if (ballCenterX - ballRadius < MIN_X) {
+        ballSpeedX = -ballSpeedX;
+        ballCenterX = MIN_X + ballRadius;
+        hitCount++;
+    } else if (ballCenterX + ballRadius > MAX_X) {
+        ballSpeedX = -ballSpeedX;
+        ballCenterX = MAX_X - ballRadius;
+        hitCount++;
+    }
+
+
+    if (ballCenterY - ballRadius < MIN_Y) {
+        ballSpeedY = -ballSpeedY;
+        ballCenterY = MIN_Y + ballRadius;
+        hitCount++;
+    } else if (ballCenterY + ballRadius > MAX_Y) {
+        ballSpeedY = -ballSpeedY;
+        ballCenterY = MAX_Y - ballRadius;
+        hitCount++;
+    }
+
+
+    updateCounter();
+}
+
+
+function drawBall(x, y, radius, color) {
+    context.beginPath();
+    context.arc(x, y, radius, 0, Math.PI * 2);
+    context.fillStyle = color;
+    context.fill();
+}
+
+
+function updateCounter() {
+    document.getElementById('counter').innerText = "Hits: " + hitCount;
+}
+
+
+function getRandomColor() {
+    var r = Math.floor(Math.random() * 256);
+    var g = Math.floor(Math.random() * 256);
+    var b = Math.floor(Math.random() * 256);
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+}
+
+
+window.addEventListener("load", init, true);
+</script>
+</body>
+</html>
